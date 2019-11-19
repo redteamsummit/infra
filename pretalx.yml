@@ -1,0 +1,60 @@
+---
+- hosts: localhost
+  become: true
+  pre_tasks:
+        - name: Install dependencies
+          package:
+            name: 
+              - acl
+              - nginx
+              - python3-pip
+            state: latest
+  tasks:
+        - name: Remove nginx default site
+          file:
+            name: "/etc/nginx/sites-enabled/default"
+            state: absent
+  roles:
+        - anxs.postgresql
+        - geerlingguy.certbot
+        - ansible-pretalx
+        - geerlingguy.redis
+  vars:
+        postgresql_databases:
+          - name: "{{ pretalx_database_name }}"
+            owner: "{{ pretalx_database_user }}"
+        postgresql_users:
+          - name: "{{ pretalx_database_user }}"
+            pass: "{{ pretalx_database_password }}"
+        postgresql_locale: "C.UTF-8"
+        postgresql_ctype: "C.UTF-8"
+
+        redis_disabled_commands:
+          - CONFIG
+          - SHUTDOWN
+          - RENAME
+          - DEBUG
+
+        certbot_create_if_missing: true
+        certbot_admin_email: "{{ pretalx_admin_mail }}"
+        certbot_certs:
+          - domains:
+            - "{{ pretalx_domain }}"
+
+        pretalx_domain: "cfp.redteamsummit.com"
+        pretalx_admin_mail: "rts@fb.com"
+
+        pretalx_database_password: //TODO - random string 1//
+        pretalx_secret_key: //TODO - random string 2//
+
+        pretalx_celery: false
+        pretalx_redis: "redis://{{ redis_bind_interface }}:{{ redis_port }}"
+        pretalx_nginx: true
+        pretalx_nginx_path: "/etc/nginx/sites-enabled/"
+        pretalx_mail_from: "{{ pretalx_admin_mail }}"
+        pretalx_mail_host: "smtp.office365.com"
+        pretalx_mail_port: "587"
+        pretalx_mail_user: "{{ pretalx_admin_mail }}"
+        pretalx_mail_password: //TODO - mail password//
+        pretalx_mail_ssl: "False"
+        pretalx_mail_tls: "True"
