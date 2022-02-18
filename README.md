@@ -28,6 +28,10 @@ $ ansible-galaxy install anxs.postgresql geerlingguy.certbot geerlingguy.redis
 $ git clone https://github.com/pretalx/ansible-pretalx
 ```
 6. Point cfp.redteamsummit.com to this host.
+7. Configure the Pretalx admin account
+```
+$ sudo -u pretalx_event python3 -m pretalx init
+```
 
 ## Running
 
